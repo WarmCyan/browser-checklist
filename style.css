@@ -7,6 +7,11 @@
     display: flex;
 }
 
+.custom_check_container {
+    display: flex;
+    flex: 1;
+}
+
 .custom_check_container input {
     display: none;
 }

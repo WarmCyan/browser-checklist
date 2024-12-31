@@ -120,6 +120,7 @@ function populate_list() {
     })
 
     p.addEventListener("blur", () => { p.contentEditable = false; });
+    checkcontainer.appendChild(p);
     
 
     let edit_btn = document.createElement("button");
@@ -149,7 +150,7 @@ function populate_list() {
     });
     
     container.appendChild(checkcontainer);
-    container.appendChild(p);
+    // container.appendChild(p);
     container.appendChild(up_btn);
     container.appendChild(down_btn);
     container.appendChild(edit_btn);
