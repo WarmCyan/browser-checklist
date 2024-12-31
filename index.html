@@ -1,20 +1,278 @@
 <html>
-    <head>
-        <link href="style.css" rel="stylesheet" />
-        <script type="text/javascript" src="code.js"></script>
-        <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag -->
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-    </head>
-    <body>
-        <h1>Checklist</h1>
-        <div id="list">
-        </div>
-            
-        <div class='row-container' style="margin-top: 10px">
-            <input type="text" name="item" id="item" />
-            <button onclick="add_item()" style="height: 50px">Add</button>
-        </div>
-        <br />
-        <button onclick="clearall()" style="height: 50px">Clear</button>
-    </body>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script type="text/javascript">
+      // references to important elements used throughout, these are set in onPageReady()
+      let iteminput = null;
+      let listdiv = null;
+
+      // check to see if a list already exists locally and load if so
+      // NOTE: local storage only saves strings, so have to use JSON parse/stringify
+      let list = localStorage.getItem("list");
+      if (list === null) { list = []; }
+      else { list = JSON.parse(list); }
+      // NOTE: list is a list of dictionaries like so:
+      /*
+        [
+         { text: (item text), checked: (whether checked or not) },
+         ...
+        ]
+      */
+
+      // update the list in the local browser storage
+      function save() {
+        localStorage.setItem("list", JSON.stringify(list));
+      }
+
+      // clear the list, currently the only way to remove items
+      function clearAll() {
+        list = []
+        save();
+        populateList();
+      }
+
+      // https://stackoverflow.com/questions/1125292/how-to-move-the-cursor-to-the-end-of-a-contenteditable-entity
+      // move cursor to the end of a contenteditable input
+      function setEndOfContenteditable(contentEditableElement)
+      {
+        var range,selection;
+        if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+        {
+          range = document.createRange();//Create a range (a range is a like the selection but invisible)
+          range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+          range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+          selection = window.getSelection();//get the selection object (allows you to change selection)
+          selection.removeAllRanges();//remove any selections already made
+          selection.addRange(range);//make the range you have just created the visible selection
+        }
+        else if(document.selection)//IE 8 and lower
+        { 
+          range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+          range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+          range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+          range.select();//Select the range (make it the visible selection
+        }
+      }
+
+      // do all initial setup
+      function onPageReady() {
+        // get the important elements
+        iteminput = document.getElementById("item");
+        listdiv = document.getElementById("list");
+
+        // add 'enter' key detection on the main add input box
+        iteminput.addEventListener("keydown", (event) => {
+          if (event.code === "Enter" || event.keyCode == 13) {
+            addItem();
+            iteminput.value = "";
+          }
+        });
+
+        populateList();
+      }
+      window.addEventListener("DOMContentLoaded", (event) => { onPageReady(); });
+
+      // add whatever is currently in the "item" text box and add it to the list
+      function addItem() {
+        list.push({text: iteminput.value, checked: false});
+        populateList();
+        save();
+      }
+
+      // change the order of the list, switch items at indices i0 and i1
+      function swap(i0, i1) {
+        console.log("Swapping " + i0.toString() + " with " + i1.toString());
+        console.log(i1 >= list.length)
+        // don't go beyond the possible index boundaries!
+        if (i0 < 0 || i1 < 0 || i0 >= list.length || i1 >= list.length) {
+          console.log("No!");
+          return; 
+        }
+        let temp = list[i0];
+        list[i0] = list[i1];
+        list[i1] = temp;
+      }
+
+      function populateList() {
+        // clear current list
+        listdiv.innerHTML = "";
+        for (let item in list) {
+          let container = document.createElement("div");
+          container.classList.add("row-container");
+
+          // --------------------------------------------------
+          // CHECKBOX AND ITEM LABEL
+          // --------------------------------------------------
+
+          // the way to theme checkboxes is to just not display them and display something
+          // else instead, to get click/tap functionality, wrap inside a label (clicking on
+          // anything inside label toggles the underlying checkbox)
+          // So essentially we have:
+          /*
+            <label (checkContainer)>
+              <input (actualCheckbox) HIDDEN>
+              <span (checkboxDisplay)></span>
+              <p (p)>item text</p>
+            </label>
+            ...
+           */
+          let checkContainer = document.createElement("label");
+          checkContainer.classList.add("custom-checkbox-container");
+
+          let actualCheckbox = document.createElement("input");
+          actualCheckbox.type = "checkbox";
+          actualCheckbox.checked = list[item].checked;
+
+          let checkboxDisplay = document.createElement("span");
+          checkboxDisplay.classList.add("checkbox");
+          checkboxDisplay.classList.add("row-item");
+
+          checkContainer.appendChild(actualCheckbox);
+          checkContainer.appendChild(checkboxDisplay);
+
+          let p = document.createElement("p")
+          p.style.flex = 1;
+          p.innerHTML = list[item].text;
+          p.classList.add("row-item");
+          p.classList.add("item-label");
+          p.classList.toggle("checked", list[item].checked);
+
+          // when the checkbox is toggled, update the list and save
+          actualCheckbox.addEventListener("input", () => {
+            list[item].checked = actualCheckbox.checked 
+            p.classList.toggle("checked", list[item].checked);
+            save();
+          });
+
+          p.addEventListener("input", (event) => {
+            list[item].text = event.target.innerText;
+            save();
+          })
+
+          // disable editing once you click away
+          p.addEventListener("blur", () => { p.contentEditable = false; });
+          checkContainer.appendChild(p);
+
+          // --------------------------------------------------
+          // ITEM BUTTONS/CONTROLS
+          // --------------------------------------------------
+
+          let edit_btn = document.createElement("button");
+          edit_btn.classList.add("row-item");
+          edit_btn.innerHTML = "edit";
+          // when the edit button is clicked, make the text editable and focus it.
+          edit_btn.addEventListener("click", () => {
+            p.contentEditable = true;
+            p.focus();
+            setEndOfContenteditable(p);
+          });
+
+          let up_btn = document.createElement("button");
+          up_btn.classList.add("row-item");
+          up_btn.innerHTML = "^";
+          up_btn.addEventListener("click", () => {
+            swap(item, parseInt(item)-1);
+            populateList();
+            save();
+          });
+
+          let down_btn = document.createElement("button");
+          down_btn.classList.add("row-item");
+          down_btn.innerHTML = "v";
+          down_btn.addEventListener("click", () => {
+            swap(item, parseInt(item)+1);
+            populateList();
+            save();
+          });
+
+          container.appendChild(checkContainer);
+          container.appendChild(up_btn);
+          container.appendChild(down_btn);
+          container.appendChild(edit_btn);
+          
+          listdiv.appendChild(container);
+        }
+      }
+    </script>
+    <style>
+body {
+  padding: 5px;
+  background-color: black;
+  color: #FFDDAA;
+}
+
+button {
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: black;
+  color: #FFDDAA;
+  border: 2px solid grey;
+  margin-left: 2px;
+  margin-top: 2px;
+}
+
+input[type="text"] {
+  height: 50px;
+  background-color: black;
+  color: #FFDDAA;
+}
+
+.row-item {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.row-container {
+  display: flex;
+}
+
+.custom-checkbox-container {
+  display: flex;
+  flex: 1;
+}
+
+.custom-checkbox-container input {
+  display: none;
+}
+.custom-checkbox-container .checkbox {
+  height: 22px;
+  width: 22px;
+  margin: 16px;
+  margin-left: 2px;
+  border: 1px solid grey;
+  display: inline-block;
+  position: relative;
+}
+
+.custom-checkbox-container [type=checkbox]:checked + .checkbox:before {
+  content : '\2714';
+font-size: 28px;
+position: absolute;
+top: -10px;
+left: 0;
+}
+
+.item-label {
+  font-family: arial;
+  font-weight: bold;
+}
+
+.item-label.checked {
+  color: grey;
+  text-decoration: line-through;
+}
+    </style>
+  </head>
+  <body>
+    <h1>Checklist</h1>
+    <div id="list">
+    </div>
+
+    <div class='row-container' style="margin-top: 10px">
+      <input type="text" name="item" id="item" enterkeyhint="enter" />
+      <button onclick="addItem()" style="height: 50px">Add</button>
+    </div>
+    <br />
+    <button onclick="clearAll()" style="height: 50px">Clear</button>
+  </body>
 </html>
