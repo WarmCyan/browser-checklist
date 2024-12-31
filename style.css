@@ -27,7 +27,7 @@
 
 .custom_check_container [type=checkbox]:checked + .checkbox:before {
     content : '\2714';
-    font-size: 20pt;
+    font-size: 28px;
     position: absolute;
     top: -5px;
     left: 0;
