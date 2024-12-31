@@ -50,7 +50,7 @@ function assign_elems() {
   iteminput = document.getElementById("item");
   listdiv = document.getElementById("list");
 
-  iteminput.addEventListener("keydown", (event) => { if (event.code === "Enter") { add_item(); iteminput.value = ""; } });
+  iteminput.addEventListener("keydown", (event) => { if (event.code === "Enter" || event.which == 13) { add_item(); iteminput.value = ""; } });
 
   populate_list();
 }
