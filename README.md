@@ -22,3 +22,6 @@ The (single) checklist is stored in local browser storage, so it will persist
 across you closing the tab/your browser app. The `^` and `v` are used to reorder
 items in the list, I was just too lazy to look up unicode symbols for up and
 down arrows.
+
+Also, everything is in a single file, and when you download it it's yours, so
+you can customize functionality and styling to your hearts content!
