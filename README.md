@@ -10,7 +10,7 @@ If so, this is the HTML file for you! I have no idea how this works on apple, bu
 on an android, you can run this in one of two ways:
 
 1. The non-techy way: just download [the HTML
-   file](https://github.com/WarmCyan/browser-checklist/releases/download/v1.0.0/index.html)
+   file](https://github.com/WarmCyan/browser-checklist/releases/download/v1.0.1/index.html)
    and then open it from your filemanager in a web browser (notably the firefox
    app can't do this...but chrome/vivaldi/etc. work fine). Your file manager
    probably also allows you to pin a shortcut to your home screen.
