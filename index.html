@@ -11,6 +11,9 @@
       let iteminput = null;
       let listdiv = null;
 
+      // state vars
+      let confirming_clear = false; // true if user hit clear button but haven't confirmed yet.
+
       // check to see if a list already exists locally and load if so
       // NOTE: local storage only saves strings, so have to use JSON parse/stringify
       let list = localStorage.getItem("list");
@@ -29,11 +32,38 @@
         localStorage.setItem("list", JSON.stringify(list));
       }
 
+      // make sure user didn't just accidentally hit clear button...
+      // I've done this twice already...
+      // I am the reason confirmation dialogs exist...
+      function promptClear() {
+        let clearBtn = document.getElementById("btn-maybe-clear");
+        let confirmBtn = document.getElementById("btn-yes-really-clear");
+        if (!confirming_clear) {
+          confirming_clear = true;
+          clearBtn.innerText = "Oops! No!";
+          clearBtn.style.backgroundColor = "grey";
+          
+          confirmBtn.style.display = "block";
+        }
+        else {
+          confirming_clear = false;
+          clearBtn.innerText = "Clear";
+          clearBtn.style.backgroundColor = null;
+          confirmBtn.style.display = "none";
+        }
+      }
+
       // clear the list, currently the only way to remove items
-      function clearAll() {
-        list = []
+      function actuallyClear() {
+        list = [];
         save();
         populateList();
+        document.getElementById("btn-yes-really-clear").style.display = "none";
+
+        let clearBtn = document.getElementById("btn-maybe-clear");
+        clearBtn.innerText = "Clear";
+        clearBtn.style.backgroundColor = null;
+        confirming_clear = false;
       }
 
       // https://stackoverflow.com/questions/1125292/how-to-move-the-cursor-to-the-end-of-a-contenteditable-entity
@@ -292,7 +322,11 @@
     </div>
     <br />
     <br />
-    <button onclick="clearAll()" style="height: 50px">Clear</button>
+    <div class='row-container'>
+      <button id='btn-maybe-clear' onclick="promptClear()" style="height: 50px">Clear</button>
+      <span style='flex: 1'></span>
+      <button id='btn-yes-really-clear' onclick="actuallyClear()" style="height: 50px; background-color: red; color: black; display: none;">Confirm clear?</button>
+    </div>
     <div id="version-lbl"></div>
   </body>
 </html>
