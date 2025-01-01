@@ -2,6 +2,11 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script type="text/javascript">
+
+      // ----------------------
+      const version = "v0.1.0";
+      // ----------------------
+
       // references to important elements used throughout, these are set in onPageReady()
       let iteminput = null;
       let listdiv = null;
@@ -67,6 +72,9 @@
             iteminput.value = "";
           }
         });
+
+        // fill the version text
+        document.getElementById("version-lbl").innerText = version;
 
         populateList();
       }
@@ -195,72 +203,81 @@
       }
     </script>
     <style>
-body {
-  padding: 5px;
-  background-color: black;
-  color: #FFDDAA;
-}
+      body {
+        padding: 5px;
+        background-color: black;
+        color: #FFDDAA;
+      }
 
-button {
-  padding-left: 10px;
-  padding-right: 10px;
-  background-color: black;
-  color: #FFDDAA;
-  border: 2px solid grey;
-  margin-left: 2px;
-  margin-top: 2px;
-}
+      button {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: black;
+        color: #FFDDAA;
+        border: 2px solid grey;
+        margin-left: 2px;
+        margin-top: 2px;
+      }
 
-input[type="text"] {
-  height: 50px;
-  background-color: black;
-  color: #FFDDAA;
-}
+      input[type="text"] {
+        height: 50px;
+        background-color: black;
+        color: #FFDDAA;
+      }
 
-.row-item {
-  display: inline-block;
-  vertical-align: top;
-}
+      .row-item {
+        display: inline-block;
+        vertical-align: top;
+      }
 
-.row-container {
-  display: flex;
-}
+      .row-container {
+        display: flex;
+      }
 
-.custom-checkbox-container {
-  display: flex;
-  flex: 1;
-}
+      .custom-checkbox-container {
+        display: flex;
+        flex: 1;
+      }
 
-.custom-checkbox-container input {
-  display: none;
-}
-.custom-checkbox-container .checkbox {
-  height: 22px;
-  width: 22px;
-  margin: 16px;
-  margin-left: 2px;
-  border: 1px solid grey;
-  display: inline-block;
-  position: relative;
-}
+      .custom-checkbox-container input {
+        display: none;
+      }
+      .custom-checkbox-container .checkbox {
+        height: 22px;
+        width: 22px;
+        margin: 16px;
+        margin-left: 2px;
+        border: 1px solid grey;
+        display: inline-block;
+        position: relative;
+      }
 
-.custom-checkbox-container [type=checkbox]:checked + .checkbox:before {
-  content : '\2714';
-font-size: 28px;
-position: absolute;
-top: -10px;
-left: 0;
-}
+      .custom-checkbox-container [type=checkbox]:checked + .checkbox:before {
+        content : '\2714';
+      font-size: 28px;
+      position: absolute;
+      top: -10px;
+      left: 0;
+      }
 
-.item-label {
-  font-family: arial;
-  font-weight: bold;
-}
+      .item-label {
+        font-family: arial;
+        font-weight: bold;
+      }
 
-.item-label.checked {
-  color: grey;
-  text-decoration: line-through;
-}
+      .item-label.checked {
+        color: grey;
+        text-decoration: line-through;
+      }
+
+      #version-lbl {
+        position: fixed;
+        bottom: 2px;
+        right: 2px;
+        opacity: .2;
+        font-size: 10px;
+        font-family: monospace;
+      }
     </style>
   </head>
   <body>
@@ -273,6 +290,8 @@ left: 0;
       <button onclick="addItem()" style="height: 50px">Add</button>
     </div>
     <br />
+    <br />
     <button onclick="clearAll()" style="height: 50px">Clear</button>
+    <div id="version-lbl"></div>
   </body>
 </html>
