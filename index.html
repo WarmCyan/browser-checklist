@@ -230,7 +230,7 @@
           let up_btn = document.createElement("button");
           up_btn.classList.add("row-item");
           //up_btn.innerHTML = "^";
-          up_btn.innerHTML = "&#x1f871;";
+          up_btn.innerHTML = "&#x2191;";
           up_btn.addEventListener("click", () => {
             swap(item, parseInt(item)-1);
             populateList();
@@ -240,7 +240,7 @@
           let down_btn = document.createElement("button");
           down_btn.classList.add("row-item");
           //down_btn.innerHTML = "v";
-          down_btn.innerHTML = "&#x1f873;";
+          down_btn.innerHTML = "&#x2193;";
           down_btn.addEventListener("click", () => {
             swap(item, parseInt(item)+1);
             populateList();
@@ -344,7 +344,7 @@
         position: fixed;
         bottom: 2px;
         right: 2px;
-        opacity: .2;
+        opacity: .5;
         font-size: 10px;
         font-family: monospace;
       }
