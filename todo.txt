@@ -6,3 +6,4 @@ DONE: confirm btn for clear click
 DONE: add version
 
 TODO: fix left padding on clear btn
+TODO: code cleaning and better docstrings

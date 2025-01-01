@@ -4,7 +4,7 @@
     <script type="text/javascript">
 
       // ----------------------
-      const version = "v0.1.0";
+      const version = "v1.0.0";
       // ----------------------
 
       // references to important elements used throughout, these are set in onPageReady()
@@ -51,6 +51,7 @@
       function setActiveList(index) {
         document.getElementById("list-" + (active_list+1).toString()).classList.remove("active-checklist");
         active_list = index; 
+        save();
         document.getElementById("list-" + (active_list+1).toString()).classList.add("active-checklist");
         populateList();
       }
@@ -228,7 +229,8 @@
 
           let up_btn = document.createElement("button");
           up_btn.classList.add("row-item");
-          up_btn.innerHTML = "^";
+          //up_btn.innerHTML = "^";
+          up_btn.innerHTML = "&#x1f881;";
           up_btn.addEventListener("click", () => {
             swap(item, parseInt(item)-1);
             populateList();
@@ -237,7 +239,8 @@
 
           let down_btn = document.createElement("button");
           down_btn.classList.add("row-item");
-          down_btn.innerHTML = "v";
+          //down_btn.innerHTML = "v";
+          down_btn.innerHTML = "&#x1f883;";
           down_btn.addEventListener("click", () => {
             swap(item, parseInt(item)+1);
             populateList();
