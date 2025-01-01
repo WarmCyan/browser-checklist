@@ -69,7 +69,6 @@
         iteminput.addEventListener("keydown", (event) => {
           if (event.code === "Enter" || event.keyCode == 13) {
             addItem();
-            iteminput.value = "";
           }
         });
 
@@ -85,6 +84,7 @@
         list.push({text: iteminput.value, checked: false});
         populateList();
         save();
+        iteminput.value = "";
       }
 
       // change the order of the list, switch items at indices i0 and i1
