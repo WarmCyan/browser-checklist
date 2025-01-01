@@ -13,23 +13,46 @@
 
       // state vars
       let confirming_clear = false; // true if user hit clear button but haven't confirmed yet.
+      let active_list = 0; // which of the three lists is currently displayed
+      let list = [[], [], []];
+      // NOTE: list is a list of lists of dictionaries like so:
+      /*
+        [
+          [ (list 1)
+            { text: (item text), checked: (whether checked or not) },
+            { text: (item text), checked: (whether checked or not) },
+            ...
+          ],
+          [ (list 2)
+            { text: (item text), checked: (whether checked or not) },
+            { text: (item text), checked: (whether checked or not) },
+            ...
+          ],
+        ]
+      */
 
       // check to see if a list already exists locally and load if so
       // NOTE: local storage only saves strings, so have to use JSON parse/stringify
-      let list = localStorage.getItem("list");
-      if (list === null) { list = []; }
+      list = localStorage.getItem("list");
+      if (list === null) { list = [[], [], []]; }
       else { list = JSON.parse(list); }
-      // NOTE: list is a list of dictionaries like so:
-      /*
-        [
-         { text: (item text), checked: (whether checked or not) },
-         ...
-        ]
-      */
+
+      // get which list of the 3 were open last
+      active_list = localStorage.getItem("active_list_index");
+      if (active_list === null) { active_list = 0; }
+      else { active_list = parseInt(active_list); }
 
       // update the list in the local browser storage
       function save() {
         localStorage.setItem("list", JSON.stringify(list));
+        localStorage.setItem("active_list_index", active_list.toString());
+      }
+
+      function setActiveList(index) {
+        document.getElementById("list-" + (active_list+1).toString()).classList.remove("active-checklist");
+        active_list = index; 
+        document.getElementById("list-" + (active_list+1).toString()).classList.add("active-checklist");
+        populateList();
       }
 
       // make sure user didn't just accidentally hit clear button...
@@ -55,7 +78,7 @@
 
       // clear the list, currently the only way to remove items
       function actuallyClear() {
-        list = [];
+        list[active_list] = [];
         save();
         populateList();
         document.getElementById("btn-yes-really-clear").style.display = "none";
@@ -105,13 +128,13 @@
         // fill the version text
         document.getElementById("version-lbl").innerText = version;
 
-        populateList();
+        setActiveList(active_list);
       }
       window.addEventListener("DOMContentLoaded", (event) => { onPageReady(); });
 
       // add whatever is currently in the "item" text box and add it to the list
       function addItem() {
-        list.push({text: iteminput.value, checked: false});
+        list[active_list].push({text: iteminput.value, checked: false});
         populateList();
         save();
         iteminput.value = "";
@@ -119,22 +142,20 @@
 
       // change the order of the list, switch items at indices i0 and i1
       function swap(i0, i1) {
-        console.log("Swapping " + i0.toString() + " with " + i1.toString());
-        console.log(i1 >= list.length)
         // don't go beyond the possible index boundaries!
-        if (i0 < 0 || i1 < 0 || i0 >= list.length || i1 >= list.length) {
+        if (i0 < 0 || i1 < 0 || i0 >= list[active_list].length || i1 >= list[active_list].length) {
           console.log("No!");
           return; 
         }
-        let temp = list[i0];
-        list[i0] = list[i1];
-        list[i1] = temp;
+        let temp = list[active_list][i0];
+        list[active_list][i0] = list[active_list][i1];
+        list[active_list][i1] = temp;
       }
 
       function populateList() {
         // clear current list
         listdiv.innerHTML = "";
-        for (let item in list) {
+        for (let item in list[active_list]) {
           let container = document.createElement("div");
           container.classList.add("row-container");
 
@@ -159,7 +180,7 @@
 
           let actualCheckbox = document.createElement("input");
           actualCheckbox.type = "checkbox";
-          actualCheckbox.checked = list[item].checked;
+          actualCheckbox.checked = list[active_list][item].checked;
 
           let checkboxDisplay = document.createElement("span");
           checkboxDisplay.classList.add("checkbox");
@@ -170,20 +191,20 @@
 
           let p = document.createElement("p")
           p.style.flex = 1;
-          p.innerHTML = list[item].text;
+          p.innerHTML = list[active_list][item].text;
           p.classList.add("row-item");
           p.classList.add("item-label");
-          p.classList.toggle("checked", list[item].checked);
+          p.classList.toggle("checked", list[active_list][item].checked);
 
           // when the checkbox is toggled, update the list and save
           actualCheckbox.addEventListener("input", () => {
-            list[item].checked = actualCheckbox.checked 
-            p.classList.toggle("checked", list[item].checked);
+            list[active_list][item].checked = actualCheckbox.checked 
+            p.classList.toggle("checked", list[active_list][item].checked);
             save();
           });
 
           p.addEventListener("input", (event) => {
-            list[item].text = event.target.innerText;
+            list[active_list][item].text = event.target.innerText;
             save();
           })
 
@@ -265,6 +286,21 @@
         display: flex;
       }
 
+      .checklist-switcher-btn {
+        height: 40px;
+        margin-top: 20px;
+        margin-left: 10px;
+        border: 1px solid #FFDDAA88;
+        opacity: .8;
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .active-checklist {
+        background: #FFDDAA;
+        color: black;
+        opacity: 1;
+      }
+
       .custom-checkbox-container {
         display: flex;
         flex: 1;
@@ -312,7 +348,13 @@
     </style>
   </head>
   <body>
-    <h1>Checklist</h1>
+    <div class='row-container'>
+      <h1 style='flex: 1'>Checklist</h1>
+      <button id='list-1' class='checklist-switcher-btn' onclick="setActiveList(0)">1</button>
+      <button id='list-2' class='checklist-switcher-btn' onclick="setActiveList(1)">2</button>
+      <button id='list-3' class='checklist-switcher-btn' onclick="setActiveList(2)">3</button>
+    </div>
+    
     <div id="list">
     </div>
 

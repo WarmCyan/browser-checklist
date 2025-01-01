@@ -1,6 +1,8 @@
-TODO: checklist switcher
+DONE: checklist switcher
 DONE: fix add button top margin
 DONE: add placeholder to input box and better border
 DONE: on add btn clicked, clear input box
 DONE: confirm btn for clear click
 DONE: add version
+
+TODO: fix left padding on clear btn
