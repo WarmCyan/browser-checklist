@@ -3,8 +3,8 @@
 ![screenshot](screenshot.png)
 
 Do you need the ability to quickly make a checklist on your phone? Do you want
-it to have basically no useful features, support no more than one list at a time,
-and be impossible to synchronize across devices?
+it to have basically no useful features, support no more than ~~one~~ (update:
+THREE!) list(s) at a time, and be impossible to synchronize across devices?
 
 If so, this is the HTML file for you! I have no idea how this works on apple, but
 on an android, you can run this in one of two ways:
@@ -20,9 +20,9 @@ on an android, you can run this in one of two ways:
    method) to `localhost:[PORT]`
 
 The (single) checklist is stored in local browser storage, so it will persist
-across you closing the tab/your browser app. The `^` and `v` are used to reorder
-items in the list, I was just too lazy to look up unicode symbols for up and
-down arrows.
+across you closing the tab/your browser app. The 1 2 3 buttons at the top allow
+you to switch between three different stored checklists. Use this expanded
+memory wisely! (Initial release supported only one.)
 
 Also, everything is in a single file, and when you download it it's yours, so
 you can customize functionality and styling to your hearts content!
